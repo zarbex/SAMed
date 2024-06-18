@@ -58,11 +58,11 @@ class Sam(nn.Module):
             outputs = self.forward_train(batched_input, multimask_output, image_size)
         return outputs
 
-    def forward_train(self, batched_input, multimask_output, image_size):
+    def forward_train(self, batched_input, multimask_output, image_size, points=None, boxes=None):
         input_images = self.preprocess(batched_input)
         image_embeddings = self.image_encoder(input_images)
         sparse_embeddings, dense_embeddings = self.prompt_encoder(
-            points=None, boxes=None, masks=None
+            points=points, boxes=boxes, masks=None
         )
         low_res_masks, iou_predictions = self.mask_decoder(
             image_embeddings=image_embeddings,
