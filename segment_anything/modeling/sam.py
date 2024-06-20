@@ -83,7 +83,7 @@ class Sam(nn.Module):
         }
         return outputs
 
-    # @torch.no_grad()
+    @torch.no_grad()
     def forward_test(
         self,
         batched_input: List[Dict[str, Any]],
