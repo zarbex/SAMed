@@ -126,7 +126,8 @@ class LoRA_Sam(nn.Module):
         mask_decoder_tensors = {}
 
         # save prompt encoder, only `state_dict`, the `named_parameter` is not permitted
-        if isinstance(self.sam, torch.nn.DataParallel) or isinstance(self.sam, torch.nn.parallel.DistributedDataParallel):
+        if isinstance(self.sam, torch.nn.DataParallel) or isinstance(self.sam,
+                                                                     torch.nn.parallel.DistributedDataParallel):
             state_dict = self.sam.module.state_dict()
         else:
             state_dict = self.sam.state_dict()
@@ -183,9 +184,8 @@ class LoRA_Sam(nn.Module):
         for w_B in self.w_Bs:
             nn.init.zeros_(w_B.weight)
 
-    def forward(self, batched_input, multimask_output, image_size):
-        return self.sam(batched_input, multimask_output, image_size)
-
+    def forward(self, batched_input, multimask_output, image_size, points=None, boxes=None):
+        return self.sam(batched_input, multimask_output, image_size, points, boxes)
 
     # def forward(self, x: Tensor) -> Tensor:
     #     return self.lora_vit(x)

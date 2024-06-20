@@ -21,12 +21,12 @@ class Sam(nn.Module):
     image_format: str = "RGB"
 
     def __init__(
-        self,
-        image_encoder: ImageEncoderViT,
-        prompt_encoder: PromptEncoder,
-        mask_decoder: MaskDecoder,
-        pixel_mean: List[float] = [123.675, 116.28, 103.53],
-        pixel_std: List[float] = [58.395, 57.12, 57.375],
+            self,
+            image_encoder: ImageEncoderViT,
+            prompt_encoder: PromptEncoder,
+            mask_decoder: MaskDecoder,
+            pixel_mean: List[float] = [123.675, 116.28, 103.53],
+            pixel_std: List[float] = [58.395, 57.12, 57.375],
     ) -> None:
         """
         SAM predicts object masks from an image and input prompts.
@@ -51,11 +51,11 @@ class Sam(nn.Module):
     def device(self) -> Any:
         return self.pixel_mean.device
 
-    def forward(self, batched_input, multimask_output, image_size):
+    def forward(self, batched_input, multimask_output, image_size, points=None, boxes=None):
         if isinstance(batched_input, list):
             outputs = self.forward_test(batched_input, multimask_output)
         else:
-            outputs = self.forward_train(batched_input, multimask_output, image_size)
+            outputs = self.forward_train(batched_input, multimask_output, image_size, points, boxes)
         return outputs
 
     def forward_train(self, batched_input, multimask_output, image_size, points=None, boxes=None):
@@ -85,9 +85,9 @@ class Sam(nn.Module):
 
     @torch.no_grad()
     def forward_test(
-        self,
-        batched_input: List[Dict[str, Any]],
-        multimask_output: bool,
+            self,
+            batched_input: List[Dict[str, Any]],
+            multimask_output: bool,
     ) -> List[Dict[str, torch.Tensor]]:
         """
         Predicts masks end-to-end from provided images and prompts.
@@ -164,10 +164,10 @@ class Sam(nn.Module):
         return outputs
 
     def postprocess_masks(
-        self,
-        masks: torch.Tensor,
-        input_size: Tuple[int, ...],
-        original_size: Tuple[int, ...],
+            self,
+            masks: torch.Tensor,
+            input_size: Tuple[int, ...],
+            original_size: Tuple[int, ...],
     ) -> torch.Tensor:
         """
         Remove padding and upscale masks to the original image size.
@@ -205,4 +205,3 @@ class Sam(nn.Module):
         padw = self.image_encoder.img_size - w
         x = F.pad(x, (0, padw, 0, padh))
         return x
-
